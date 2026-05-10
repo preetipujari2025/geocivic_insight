@@ -1,0 +1,5 @@
+Django>=4.2,<5.0
+django-environ>=0.11
+psycopg2-binary>=2.9        # PostgreSQL driver (use psycopg2 in production)
+GDAL>=3.0                   # Geospatial Data Abstraction Library
+djangorestframework>=3.14   # REST API support
