@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GeoCivic Insight — Find your MLA and MP based on your location. Covering all 224 Karnataka Assembly constituencies.">
+    <title>GeoCivic Insight — Know Who Represents You</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#16a34a"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                <span>GEOCIVIC INSIGHT</span>
+            </a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#hero" class="active">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#stats">Coverage</a></li>
+                <li><a href="#footer">Contact</a></li>
+            </ul>
+            <a href="#hero" class="nav-cta">Get Started</a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-image"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <p class="hero-label">KARNATAKA CIVIC INTELLIGENCE</p>
+                <h1 class="hero-title">Know Who <span class="text-green">Represents You</span></h1>
+                <p class="hero-subtitle">Enter your location to instantly find your MLA and MP — and what they've actually done.</p>
+
+                <div class="hero-buttons">
+                    <button id="locate-btn" class="btn-primary-landing">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        Use My Location
+                    </button>
+                    <a href="#search-section" class="btn-secondary-landing">Search Manually</a>
+                </div>
+
+                <p id="location-error" class="location-error"></p>
+
+                <div class="search-section" id="search-section">
+                    <div class="search-bar">
+                        <input type="text" id="search-input" class="search-input-landing" placeholder="Enter constituency name..." autocomplete="off">
+                        <button id="search-btn" class="search-btn-landing">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                            Search
+                        </button>
+                    </div>
+                    <p id="search-error" class="search-error-landing"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section" id="stats">
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#16a34a"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+                </div>
+                <h3 class="stat-number">224</h3>
+                <p class="stat-label">Assembly Constituencies</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#16a34a"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                </div>
+                <h3 class="stat-number">28</h3>
+                <p class="stat-label">Lok Sabha Constituencies</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#16a34a"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                </div>
+                <h3 class="stat-number">One Goal</h3>
+                <p class="stat-label">Transparent Governance for Citizens</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="about-container">
+            <p class="section-label">ABOUT THE PLATFORM</p>
+            <h2 class="section-heading">Empowering Citizens with <span class="text-green">Civic Intelligence</span></h2>
+            <p class="section-desc">GeoCivic Insight uses geolocation and AI-powered analysis to connect Karnataka citizens with their elected representatives. View achievements, sentiment analysis, and constituency data — all in one place.</p>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-section" id="how-it-works">
+        <div class="how-container">
+            <p class="section-label">HOW IT WORKS</p>
+            <h2 class="section-heading">Three Simple Steps</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <h4>Share Location</h4>
+                    <p>Use GPS or search your constituency name to identify your area.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <h4>View Your Map</h4>
+                    <p>See your constituency boundaries highlighted on an interactive map.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <h4>Know Your Leaders</h4>
+                    <p>View MLA/MP profiles, achievements, and public sentiment analysis.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer" id="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#16a34a"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                <span>GeoCivic Insight</span>
+            </div>
+            <p class="footer-text">Built for Karnataka Citizens · No external APIs · Privacy first</p>
+            <p class="footer-copy">© 2026 GeoCivic Insight. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/geo.js"></script>
+    <script>
+        (function () {
+            const locateBtn = document.getElementById('locate-btn');
+            const locationError = document.getElementById('location-error');
+            const searchInput = document.getElementById('search-input');
+            const searchBtn = document.getElementById('search-btn');
+            const searchError = document.getElementById('search-error');
+
+            // --- Locate button ---
+            locateBtn.addEventListener('click', function () {
+                locateBtn.innerHTML = '<span class="spinner-light"></span> Getting location...';
+                locateBtn.disabled = true;
+                locationError.style.display = 'none';
+
+                GeoLocation.requestLocation(
+                    function (lat, lng, accuracy) {
+                        GeoLocation.storeCoordinates(lat, lng);
+                        window.location.href = 'map.html';
+                    },
+                    function (errorMsg) {
+                        locationError.textContent = errorMsg;
+                        locationError.style.display = 'block';
+                        locateBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Use My Location';
+                        locateBtn.disabled = false;
+                    },
+                    function () {}
+                );
+            });
+
+            // --- Search button ---
+            function performSearch() {
+                const query = searchInput.value.trim();
+                searchError.style.display = 'none';
+
+                if (query.length < 3) {
+                    searchError.textContent = 'Please enter at least 3 characters';
+                    searchError.style.display = 'block';
+                    return;
+                }
+
+                GeoLocation.storeSearchQuery(query);
+                window.location.href = 'map.html';
+            }
+
+            searchBtn.addEventListener('click', performSearch);
+
+            searchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+
+            // --- Navbar toggle ---
+            const navToggle = document.getElementById('nav-toggle');
+            const navLinks = document.getElementById('nav-links');
+            navToggle.addEventListener('click', function () {
+                navLinks.classList.toggle('open');
+                navToggle.classList.toggle('active');
+            });
+
+            // --- Navbar scroll effect ---
+            window.addEventListener('scroll', function () {
+                const navbar = document.getElementById('navbar');
+                if (window.scrollY > 20) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
