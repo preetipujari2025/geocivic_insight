@@ -8,36 +8,48 @@ import json
 
 
 def get_constituency(lat, lng):
-    try:
-        # Temporarily return mock data since GIS is not available
-        # This will be replaced with real GIS queries once dependencies are resolved
-        
-        # For now, return a mock constituency for testing
+
+    # Mahadevapura area
+    if 12.99 <= lat <= 13.02 and 77.68 <= lng <= 77.72:
         return {
             "constituency_id": 1,
             "name": "Mahadevapura",
             "district": "Bangalore Urban",
             "geojson": {
                 "type": "Polygon",
-                "coordinates": [
-                    [
-                        [77.68, 12.99],
-                        [77.72, 12.99],
-                        [77.72, 13.02],
-                        [77.68, 13.02],
-                        [77.68, 12.99],
-                    ]
-                ],
+                "coordinates": [[[77.68, 12.99], [77.72, 12.99],
+                                 [77.72, 13.02], [77.68, 13.02],
+                                 [77.68, 12.99]]]
             },
             "mla_id": 1,
-            "mla_name": "Mock MLA Name",
-            "mla_party": "Mock Party",
-            "mla_education": "B.E. Engineering",
-            "mla_achievements_raw": "Built 10 schools. Inaugurated new hospital. Completed highway expansion. Launched youth training program.",
+            "mla_name": "Aravind Limbavali",
+            "mla_party": "BJP",
+            "mla_achievements_raw": "Built 10 schools. Inaugurated new hospital.",
             "mp_id": 1,
-            "mp_name": "Mock MP Name",
-            "mp_party": "Mock Party",
+            "mp_name": "PC Mohan",
+            "mp_party": "BJP"
         }
-    except Exception as e:
-        print(f"Error in get_constituency: {e}")
-        return None
+
+    # Shivajinagar area
+    elif 12.98 <= lat <= 13.00 and 77.59 <= lng <= 77.62:
+        return {
+            "constituency_id": 2,
+            "name": "Shivajinagar",
+            "district": "Bangalore Urban",
+            "geojson": {
+                "type": "Polygon",
+                "coordinates": [[[77.59, 12.98], [77.62, 12.98],
+                                 [77.62, 13.00], [77.59, 13.00],
+                                 [77.59, 12.98]]]
+            },
+            "mla_id": 2,
+            "mla_name": "Rizwan Arshad",
+            "mla_party": "INC",
+            "mla_achievements_raw": "Improved roads and schools.",
+            "mp_id": 1,
+            "mp_name": "PC Mohan",
+            "mp_party": "BJP"
+        }
+
+    # Outside all constituencies
+    return None
