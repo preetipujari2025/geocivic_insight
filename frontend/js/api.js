@@ -5,7 +5,7 @@
  */
 
 const CONFIG = {
-    USE_MOCK: true,  // CHANGE TO false WHEN REAL API IS READY
+    USE_MOCK: false,  // CHANGE TO false WHEN REAL API IS READY
     API_BASE: 'http://127.0.0.1:8000/api',
     MOCK_DELAY_MS: 800,  // fake network delay for realistic testing
 };
