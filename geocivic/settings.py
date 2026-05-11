@@ -10,22 +10,43 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
+import environ
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Read environment variables from .env file
+env = environ.Env(
+    DEBUG=(bool, True),
+    GDAL_LIBRARY_PATH=(str, ''),
+)
+environ.Env.read_env(BASE_DIR / '.env')
+
+# ---------------------------------------------------------------------------
+# Windows: add OSGeo4W bin to the DLL search path so gdal312.dll can load
+# its own dependencies (proj, geos, etc.) from the OSGeo4W installation.
+# os.add_dll_directory() is available on Python 3.8+ / Windows only.
+# ---------------------------------------------------------------------------
+_gdal_dll_dir = None
+if os.name == 'nt':
+    _osgeo4w_bin = r'C:\OSGeo4W\bin'
+    if os.path.isdir(_osgeo4w_bin) and _osgeo4w_bin not in os.environ.get('PATH', ''):
+        os.environ['PATH'] = _osgeo4w_bin + os.pathsep + os.environ.get('PATH', '')
+        _gdal_dll_dir = os.add_dll_directory(_osgeo4w_bin)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ph#*!(hef_gb)$!0&2+&nba+jjj_!jg&^bk6va#8c66*26_)n='
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -37,6 +58,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'django.contrib.gis',  # Completely disabled - GeoDjango / PostGIS support
+    'db',                  # Re-enabled for testing (models work without GIS)
+    'api',                  # Re-enabled for API functionality
 ]
 
 MIDDLEWARE = [
@@ -121,3 +145,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# -------------------------------------------------------------------
+# GDAL / PostGIS (GeoDjango)
+# On Windows, set GDAL_LIBRARY_PATH in your .env to the full path of
+# the GDAL DLL, e.g.  C:/OSGeo4W/bin/gdal309.dll
+# On Linux/Mac the library is usually discovered automatically.
+# -------------------------------------------------------------------
+GDAL_LIBRARY_PATH = env('GDAL_LIBRARY_PATH', default='')
