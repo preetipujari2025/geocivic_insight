@@ -1,0 +1,898 @@
+[
+  {
+    "name": "Afzalpur",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Aland",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Anekal (SC)",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Arabhavi",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Arkalgud",
+    "district": "Hassan"
+  },
+  {
+    "name": "Arsikere",
+    "district": "Hassan"
+  },
+  {
+    "name": "Athani",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Aurad (SC)",
+    "district": "Bidar"
+  },
+  {
+    "name": "B.T.M Layout",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Babaleshwar",
+    "district": "Bijapur"
+  },
+  {
+    "name": "Badami",
+    "district": "Bagalkot *"
+  },
+  {
+    "name": "Bagalkot",
+    "district": "Bagalkot *"
+  },
+  {
+    "name": "Bagepalli",
+    "district": "Kolar"
+  },
+  {
+    "name": "Bailhongal",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Bangalore South",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Bangarapet (SC)",
+    "district": "Kolar"
+  },
+  {
+    "name": "Bantval",
+    "district": "Dakshina Kannada"
+  },
+  {
+    "name": "Basavakalyan",
+    "district": "Bidar"
+  },
+  {
+    "name": "Basavana Bagevadi",
+    "district": "Bijapur"
+  },
+  {
+    "name": "Basavanagudi",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Belgaum Dakshin",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Belgaum Rural",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Belgaum Uttar",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Bellary (ST)",
+    "district": "Bellary"
+  },
+  {
+    "name": "Bellary City",
+    "district": "Bellary"
+  },
+  {
+    "name": "Belthangady",
+    "district": "Dakshina Kannada"
+  },
+  {
+    "name": "Belur",
+    "district": "Hassan"
+  },
+  {
+    "name": "Bhadravati",
+    "district": "Shimoga"
+  },
+  {
+    "name": "Bhalki",
+    "district": "Bidar"
+  },
+  {
+    "name": "Bhatkal",
+    "district": "Uttara Kannada"
+  },
+  {
+    "name": "Bidar",
+    "district": "Bidar"
+  },
+  {
+    "name": "Bidar South",
+    "district": "Bidar"
+  },
+  {
+    "name": "Bijapur City",
+    "district": "Bijapur"
+  },
+  {
+    "name": "Bilgi",
+    "district": "Bagalkot *"
+  },
+  {
+    "name": "Bommanahalli",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Byadgi",
+    "district": "Haveri *"
+  },
+  {
+    "name": "Byatarayanapura",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Byndoor",
+    "district": "Udupi *"
+  },
+  {
+    "name": "C.V. Raman Nagar (SC)",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Challakere (ST)",
+    "district": "Chitradurga"
+  },
+  {
+    "name": "Chamaraja",
+    "district": "Mysore"
+  },
+  {
+    "name": "Chamarajanagar",
+    "district": "Chamrajnagar*"
+  },
+  {
+    "name": "Chamrajpet",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Chamundeshwari",
+    "district": "Mysore"
+  },
+  {
+    "name": "Channagiri",
+    "district": "Davangere*"
+  },
+  {
+    "name": "Channapatna",
+    "district": "Bangalore Rural"
+  },
+  {
+    "name": "Chickpet",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Chikkaballapur",
+    "district": "Kolar"
+  },
+  {
+    "name": "Chikkodi-Sadalga",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Chikmagalur",
+    "district": "Chikmagalur"
+  },
+  {
+    "name": "Chiknayakanhalli",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Chincholi (SC)",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Chintamani",
+    "district": "Kolar"
+  },
+  {
+    "name": "Chitradurga",
+    "district": "Chitradurga"
+  },
+  {
+    "name": "Chittapur (SC)",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Dasarahalli",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Davanagere North",
+    "district": "Davangere*"
+  },
+  {
+    "name": "Davanagere South",
+    "district": "Davangere*"
+  },
+  {
+    "name": "Devadurga (ST)",
+    "district": "Raichur"
+  },
+  {
+    "name": "Devanahalli (SC)",
+    "district": "Bangalore Rural"
+  },
+  {
+    "name": "Devar Hippargi",
+    "district": "Bijapur"
+  },
+  {
+    "name": "Dharwad",
+    "district": "Dharwad"
+  },
+  {
+    "name": "Doddaballapur",
+    "district": "Bangalore Rural"
+  },
+  {
+    "name": "Gadag",
+    "district": "Gadag *"
+  },
+  {
+    "name": "Gandhi Nagar",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Gangawati",
+    "district": "Koppal *"
+  },
+  {
+    "name": "Gauribidanur",
+    "district": "Kolar"
+  },
+  {
+    "name": "Gokak",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Govindraj Nagar",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Gubbi",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Gulbarga Dakshin",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Gulbarga Rural (SC)",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Gulbarga Uttar",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Gundlupet",
+    "district": "Chamrajnagar*"
+  },
+  {
+    "name": "Gurmitkal",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Hadagalli (SC)",
+    "district": "Bellary"
+  },
+  {
+    "name": "Hagaribommanahalli (SC)",
+    "district": "Bellary"
+  },
+  {
+    "name": "Haliyal",
+    "district": "Uttara Kannada"
+  },
+  {
+    "name": "Hangal",
+    "district": "Haveri *"
+  },
+  {
+    "name": "Hanur",
+    "district": "Chamrajnagar*"
+  },
+  {
+    "name": "Harapanahalli",
+    "district": "Davangere*"
+  },
+  {
+    "name": "Harihar",
+    "district": "Davangere*"
+  },
+  {
+    "name": "Hassan",
+    "district": "Hassan"
+  },
+  {
+    "name": "Haveri (SC)",
+    "district": "Haveri *"
+  },
+  {
+    "name": "Hebbal",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Heggadadevankote (ST)",
+    "district": "Mysore"
+  },
+  {
+    "name": "Hirekerur",
+    "district": "Haveri *"
+  },
+  {
+    "name": "Hiriyur",
+    "district": "Chitradurga"
+  },
+  {
+    "name": "Holalkere (SC)",
+    "district": "Chitradurga"
+  },
+  {
+    "name": "Holenarasipur",
+    "district": "Hassan"
+  },
+  {
+    "name": "Homnabad",
+    "district": "Bidar"
+  },
+  {
+    "name": "Honnali",
+    "district": "Davangere*"
+  },
+  {
+    "name": "Hosadurga",
+    "district": "Chitradurga"
+  },
+  {
+    "name": "Hosakote",
+    "district": "Bangalore Rural"
+  },
+  {
+    "name": "Hubli-Dharwad- West",
+    "district": "Dharwad"
+  },
+  {
+    "name": "Hubli-Dharwad-Central",
+    "district": "Dharwad"
+  },
+  {
+    "name": "Hubli-Dharwad-East (SC)",
+    "district": "Dharwad"
+  },
+  {
+    "name": "Hukkeri",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Hungund",
+    "district": "Bagalkot *"
+  },
+  {
+    "name": "Hunsur",
+    "district": "Mysore"
+  },
+  {
+    "name": "Indi",
+    "district": "Bijapur"
+  },
+  {
+    "name": "Jagalur (ST)",
+    "district": "Davangere*"
+  },
+  {
+    "name": "Jamkhandi",
+    "district": "Bagalkot *"
+  },
+  {
+    "name": "Jayanagar",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Jevargi",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "K.R.Pura",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Kadur",
+    "district": "Chikmagalur"
+  },
+  {
+    "name": "Kagwad",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Kalghatgi",
+    "district": "Dharwad"
+  },
+  {
+    "name": "Kampli (ST)",
+    "district": "Bellary"
+  },
+  {
+    "name": "Kanakagiri (SC)",
+    "district": "Koppal *"
+  },
+  {
+    "name": "Kanakapura",
+    "district": "Bangalore Rural"
+  },
+  {
+    "name": "Kapu",
+    "district": "Udupi *"
+  },
+  {
+    "name": "Karkal",
+    "district": "Udupi *"
+  },
+  {
+    "name": "Karwar",
+    "district": "Uttara Kannada"
+  },
+  {
+    "name": "Khanapur",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Kittur",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Kolar",
+    "district": "Kolar"
+  },
+  {
+    "name": "Kolar Gold Field (SC)",
+    "district": "Kolar"
+  },
+  {
+    "name": "Kollegal (SC)",
+    "district": "Chamrajnagar*"
+  },
+  {
+    "name": "Koppal",
+    "district": "Koppal *"
+  },
+  {
+    "name": "Koratagere (SC)",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Krishnaraja",
+    "district": "Mysore"
+  },
+  {
+    "name": "Krishnarajanagara",
+    "district": "Mysore"
+  },
+  {
+    "name": "Krishnarajpet",
+    "district": "Mandya"
+  },
+  {
+    "name": "Kudachi (SC)",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Kudligi (ST)",
+    "district": "Bellary"
+  },
+  {
+    "name": "Kumta",
+    "district": "Uttara Kannada"
+  },
+  {
+    "name": "Kundapura",
+    "district": "Udupi *"
+  },
+  {
+    "name": "Kundgol",
+    "district": "Dharwad"
+  },
+  {
+    "name": "Kunigal",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Kushtagi",
+    "district": "Koppal *"
+  },
+  {
+    "name": "Lingsugur (SC)",
+    "district": "Raichur"
+  },
+  {
+    "name": "Maddur",
+    "district": "Mandya"
+  },
+  {
+    "name": "Madhugiri",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Madikeri",
+    "district": "Kodagu"
+  },
+  {
+    "name": "Magadi",
+    "district": "Bangalore Rural"
+  },
+  {
+    "name": "Mahadevapura",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Mahalakshmi Layout",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Malavalli (SC)",
+    "district": "Mandya"
+  },
+  {
+    "name": "Malleshwaram",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Malur",
+    "district": "Kolar"
+  },
+  {
+    "name": "Mandya",
+    "district": "Mandya"
+  },
+  {
+    "name": "Mangalore",
+    "district": "Dakshina Kannada"
+  },
+  {
+    "name": "Mangalore City North",
+    "district": "Dakshina Kannada"
+  },
+  {
+    "name": "Mangalore City South",
+    "district": "Dakshina Kannada"
+  },
+  {
+    "name": "Manvi (ST)",
+    "district": "Raichur"
+  },
+  {
+    "name": "Maski (ST)",
+    "district": "Raichur"
+  },
+  {
+    "name": "Mayakonda (SC)",
+    "district": "Davangere*"
+  },
+  {
+    "name": "Melukote",
+    "district": "Mandya"
+  },
+  {
+    "name": "Molakalmuru (ST)",
+    "district": "Chitradurga"
+  },
+  {
+    "name": "Moodabidri",
+    "district": "Dakshina Kannada"
+  },
+  {
+    "name": "Muddebihal",
+    "district": "Bijapur"
+  },
+  {
+    "name": "Mudhol (SC)",
+    "district": "Bagalkot *"
+  },
+  {
+    "name": "Mudigere (SC)",
+    "district": "Chikmagalur"
+  },
+  {
+    "name": "Mulbagal (SC)",
+    "district": "Kolar"
+  },
+  {
+    "name": "Nagamangala",
+    "district": "Mandya"
+  },
+  {
+    "name": "Nagthan (SC)",
+    "district": "Bijapur"
+  },
+  {
+    "name": "Nanjangud (SC)",
+    "district": "Mysore"
+  },
+  {
+    "name": "Narasimharaja",
+    "district": "Mysore"
+  },
+  {
+    "name": "Nargund",
+    "district": "Gadag *"
+  },
+  {
+    "name": "Navalgund",
+    "district": "Dharwad"
+  },
+  {
+    "name": "Nelamangala (SC)",
+    "district": "Bangalore Rural"
+  },
+  {
+    "name": "Nippani",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Padmanaba Nagar",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Pavagada (SC)",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Piriyapatna",
+    "district": "Mysore"
+  },
+  {
+    "name": "Pulakeshinagar (SC)",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Puttur",
+    "district": "Dakshina Kannada"
+  },
+  {
+    "name": "Raichur",
+    "district": "Raichur"
+  },
+  {
+    "name": "Raichur Rural (ST)",
+    "district": "Raichur"
+  },
+  {
+    "name": "Rajaji Nagar",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Rajarajeshwarinagar",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Ramanagaram",
+    "district": "Bangalore Rural"
+  },
+  {
+    "name": "Ramdurg",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Ranibennur",
+    "district": "Haveri *"
+  },
+  {
+    "name": "Raybag (SC)",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Ron",
+    "district": "Gadag *"
+  },
+  {
+    "name": "Sagar",
+    "district": "Shimoga"
+  },
+  {
+    "name": "Sakleshpur (SC)",
+    "district": "Hassan"
+  },
+  {
+    "name": "Sandur (ST)",
+    "district": "Bellary"
+  },
+  {
+    "name": "Sarvagnanagar",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Saundatti Yellamma",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Sedam",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Shahapur",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Shanti Nagar",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Shiggaon",
+    "district": "Haveri *"
+  },
+  {
+    "name": "Shikaripura",
+    "district": "Shimoga"
+  },
+  {
+    "name": "Shimoga",
+    "district": "Shimoga"
+  },
+  {
+    "name": "Shimoga Rural (SC)",
+    "district": "Shimoga"
+  },
+  {
+    "name": "Shirahatti (SC)",
+    "district": "Gadag *"
+  },
+  {
+    "name": "Shivajinagar",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Shorapur (ST)",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Shravanabelagola",
+    "district": "Hassan"
+  },
+  {
+    "name": "Shrirangapattana",
+    "district": "Mandya"
+  },
+  {
+    "name": "Sidlaghatta",
+    "district": "Kolar"
+  },
+  {
+    "name": "Sindgi",
+    "district": "Bijapur"
+  },
+  {
+    "name": "Sindhanur",
+    "district": "Raichur"
+  },
+  {
+    "name": "Sira",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Sirsi",
+    "district": "Uttara Kannada"
+  },
+  {
+    "name": "Siruguppa (ST)",
+    "district": "Bellary"
+  },
+  {
+    "name": "Sorab",
+    "district": "Shimoga"
+  },
+  {
+    "name": "Sringeri",
+    "district": "Chikmagalur"
+  },
+  {
+    "name": "Srinivaspur",
+    "district": "Kolar"
+  },
+  {
+    "name": "Sullia (SC)",
+    "district": "Dakshina Kannada"
+  },
+  {
+    "name": "T.Narasipur (SC)",
+    "district": "Mysore"
+  },
+  {
+    "name": "Tarikere",
+    "district": "Chikmagalur"
+  },
+  {
+    "name": "Terdal",
+    "district": "Bagalkot *"
+  },
+  {
+    "name": "Tiptur",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Tirthahalli",
+    "district": "Shimoga"
+  },
+  {
+    "name": "Tumkur City",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Tumkur Rural",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Turuvekere",
+    "district": "Tumkur"
+  },
+  {
+    "name": "Udupi",
+    "district": "Udupi *"
+  },
+  {
+    "name": "Varuna",
+    "district": "Mysore"
+  },
+  {
+    "name": "Vijay Nagar",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Vijayanagara",
+    "district": "Bellary"
+  },
+  {
+    "name": "Virajpet",
+    "district": "Kodagu"
+  },
+  {
+    "name": "Yadgir",
+    "district": "Gulbarga"
+  },
+  {
+    "name": "Yelahanka",
+    "district": "Bangalore"
+  },
+  {
+    "name": "Yelburga",
+    "district": "Koppal *"
+  },
+  {
+    "name": "Yellapur",
+    "district": "Uttara Kannada"
+  },
+  {
+    "name": "Yemkanmardi (ST)",
+    "district": "Belgaum"
+  },
+  {
+    "name": "Yeshvanthapura",
+    "district": "Bangalore"
+  }
+]

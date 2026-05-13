@@ -59,7 +59,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',  # GeoDjango / PostGIS support
-    'db',                  # GeoCivic spatial data models
+    'db',     
+    'rest_framework',
+    'rest_framework_gis',             # GeoCivic spatial data models
 ]
 
 MIDDLEWARE = [

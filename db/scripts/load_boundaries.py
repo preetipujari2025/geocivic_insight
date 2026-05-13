@@ -1,176 +1,197 @@
 """
-load_boundaries.py – Standalone script to import constituency GeoJSON
-boundary data into the PostGIS database.
+load_boundaries.py – Load Karnataka assembly constituency boundaries
+from the India_AC shapefile into the PostGIS database.
 
-Usage:
-    python db/scripts/load_boundaries.py                         # uses default fixture path
-    python db/scripts/load_boundaries.py path/to/custom.geojson  # custom file
+Usage (from Django shell):
+    exec(open("db/scripts/load_boundaries.py").read())
+
+Usage (standalone):
+    python db/scripts/load_boundaries.py
 
 Compatibility: Windows · Python 3.10+ · Django 4.2 · PostGIS · GeoDjango
 """
 
-# ---------------------------------------------------------------------------
-# 1. Bootstrap Django before any ORM / model imports
-# ---------------------------------------------------------------------------
-import django
 import os
 import sys
-import json
 import time
+import re
 from pathlib import Path
 
-# Resolve the project root (two levels up from this script)
-_PROJECT_ROOT = os.path.dirname(
-    os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__))
-    )
-)
-sys.path.insert(0, _PROJECT_ROOT)
+
+def _find_project_root() -> Path:
+    """
+    Locate the Django project root by searching for manage.py.
+    Works under both `python script.py` and exec() from Django shell.
+    """
+    try:
+        candidate = Path(__file__).resolve().parent
+        for _ in range(5):
+            if (candidate / 'manage.py').is_file():
+                return candidate
+            candidate = candidate.parent
+    except NameError:
+        pass
+
+    candidate = Path(os.getcwd()).resolve()
+    for _ in range(5):
+        if (candidate / 'manage.py').is_file():
+            return candidate
+        candidate = candidate.parent
+
+    return Path(os.getcwd()).resolve()
+
+
+_PROJECT_ROOT = _find_project_root()
+
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'geocivic.settings')
-django.setup()
+
+import django  # noqa: E402
+try:
+    django.setup()
+except RuntimeError:
+    pass  # Already set up inside Django shell
+
+from django.contrib.gis.geos import GEOSGeometry, MultiPolygon  # noqa: E402
+from django.db import transaction                                 # noqa: E402
+from db.models import Constituency                               # noqa: E402
 
 # ---------------------------------------------------------------------------
-# 2. Django-dependent imports (safe only after django.setup())
+# Paths
 # ---------------------------------------------------------------------------
-from db.models import Constituency                       # noqa: E402
-from django.contrib.gis.geos import GEOSGeometry         # noqa: E402
-from django.db import transaction                         # noqa: E402
+SHP_PATH  = _PROJECT_ROOT / 'db' / 'data' / 'India_AC.shp'
 
-# ---------------------------------------------------------------------------
-# Default fixture path (relative to the project root)
-# ---------------------------------------------------------------------------
-DEFAULT_GEOJSON_PATH = os.path.join(
-    _PROJECT_ROOT, 'db', 'fixtures', 'constituencies.json'
-)
+KARNATAKA_KEYS = ('ST_NAME', 'STATE_NAME', 'STATE', 'St_Name', 'state_name', 'state')
+INVALID_NAMES  = {'nan', 'none', '', 'n/a'}
 
 
-# ---------------------------------------------------------------------------
-# 3. Core loader
-# ---------------------------------------------------------------------------
-def load_from_geojson(filepath: str) -> None:
-    """
-    Parse a GeoJSON FeatureCollection and upsert each feature into the
-    ``Constituency`` table.
+def _is_karnataka(row_dict: dict) -> bool:
+    for key in KARNATAKA_KEYS:
+        val = row_dict.get(key, '')
+        if val and 'karnataka' in str(val).strip().lower():
+            return True
+    return False
 
-    * Reads the file as UTF-8 to handle multilingual constituency names.
-    * Handles both ``Polygon`` and ``MultiPolygon`` geometry types
-      (``MultiPolygon`` is coerced to ``Polygon`` via the largest component
-      when the model field is ``PolygonField``).
-    * Wraps all writes in an atomic transaction so a partial failure
-      does not leave the database in an inconsistent state — individual
-      feature errors are caught and logged without aborting the batch.
 
-    Parameters
-    ----------
-    filepath : str
-        Absolute or relative path to a GeoJSON file whose root object is
-        a ``FeatureCollection``.
-    """
-    resolved_path = Path(filepath).resolve()
+def _pick_name(row_dict: dict) -> str:
+    for key in ('AC_NAME', 'CONSTITUENCY', 'CONST_NAME', 'NAME', 'Ac_Name', 'ac_name', 'name'):
+        val = row_dict.get(key, '')
+        if val and str(val).strip():
+            return str(val).strip()
+    return ''
 
-    if not resolved_path.is_file():
-        print(f"[ERROR] File not found: {resolved_path}")
-        sys.exit(1)
 
-    # --- Read & parse -------------------------------------------------------
-    with open(resolved_path, encoding='utf-8') as fh:
-        try:
-            data = json.load(fh)
-        except json.JSONDecodeError as exc:
-            print(f"[ERROR] Invalid JSON in {resolved_path}: {exc}")
-            sys.exit(1)
+def _clean_name(raw: str) -> str:
+    """Title-case, normalise SC/ST tags."""
+    name = re.sub(r'\(\s*sc\s*\)', '(SC)', raw.strip(), flags=re.IGNORECASE)
+    name = re.sub(r'\(\s*st\s*\)', '(ST)', name, flags=re.IGNORECASE)
+    base = re.sub(r'\s*\((SC|ST)\)\s*$', '', name, flags=re.IGNORECASE).strip().title()
+    tag  = re.search(r'\((SC|ST)\)\s*$', name, flags=re.IGNORECASE)
+    return f"{base} ({tag.group(1).upper()})" if tag else base
 
-    features = data.get('features')
-    if not features:
-        print("[WARN] No features found in the GeoJSON file.")
+
+def _pick_district(row_dict: dict) -> str:
+    for key in ('DIST_NAME', 'DISTRICT', 'DT_NAME', 'dist_name', 'district'):
+        val = row_dict.get(key, '')
+        if val and str(val).strip():
+            return str(val).strip().title()
+    return 'Unknown'
+
+
+def _to_multipolygon(geom: GEOSGeometry) -> MultiPolygon:
+    if geom.geom_type == 'MultiPolygon':
+        return geom
+    if geom.geom_type == 'Polygon':
+        return MultiPolygon(geom)
+    raise ValueError(f"Unsupported geometry type: {geom.geom_type}")
+
+
+def load_karnataka_constituencies() -> None:
+    try:
+        import geopandas as gpd
+    except ImportError:
+        print("[ERROR] geopandas not installed. Run: pip install geopandas")
         return
 
-    print(f"[INFO] Found {len(features)} feature(s) to process.\n")
+    shp = SHP_PATH.resolve()
+    if not shp.is_file():
+        print(f"[ERROR] Shapefile not found: {shp}")
+        return
 
+    print(f"[INFO] Reading: {shp}")
+    gdf = gpd.read_file(shp)
+
+    if gdf.crs is None:
+        print("[WARN] CRS not set; assuming EPSG:4326.")
+    elif gdf.crs.to_epsg() != 4326:
+        print(f"[INFO] Reprojecting {gdf.crs} → EPSG:4326")
+        gdf = gdf.to_crs(epsg=4326)
+
+    karnataka_rows = [
+        (idx, row) for idx, row in gdf.iterrows()
+        if _is_karnataka(row.to_dict())
+    ]
+    print(f"[INFO] Karnataka rows in shapefile: {len(karnataka_rows)}\n")
+
+    seen   = set()   # normalised names already inserted
     loaded = 0
     skipped = 0
 
-    # --- Process features ---------------------------------------------------
     with transaction.atomic():
-        for idx, feature in enumerate(features, start=1):
+        for seq, (_, row) in enumerate(karnataka_rows, start=1):
+            d = row.to_dict()
             try:
-                properties = feature.get('properties', {})
-
-                # Constituency name — try common GeoJSON property keys
-                name = (
-                    properties.get('CONSTITUENCY_NAME')
-                    or properties.get('name')
-                )
-                if not name:
-                    print(
-                        f"  [{idx}] SKIP – no constituency name found in "
-                        f"properties: {list(properties.keys())}"
-                    )
+                raw_name = _pick_name(d)
+                if not raw_name or raw_name.strip().lower() in INVALID_NAMES:
+                    print(f"  [{seq:>3}] SKIP – invalid name: {repr(raw_name)}")
                     skipped += 1
                     continue
 
-                # District
-                district = (
-                    properties.get('DISTRICT_NAME')
-                    or properties.get('district', 'Unknown')
-                )
+                name     = _clean_name(raw_name)
+                norm_key = re.sub(r'[^a-z0-9]', '', name.lower())
 
-                # Geometry → GEOSGeometry
-                raw_geometry = feature.get('geometry')
-                if not raw_geometry:
-                    print(f"  [{idx}] SKIP – '{name}' has no geometry.")
+                if norm_key in seen:
+                    print(f"  [{seq:>3}] DUP  – skipping duplicate: {name}")
+                    skipped += 1
+                    continue
+                seen.add(norm_key)
+
+                district = _pick_district(d)
+
+                raw_geom = row.geometry
+                if raw_geom is None or raw_geom.is_empty:
+                    print(f"  [{seq:>3}] SKIP – {name!r} has no geometry.")
                     skipped += 1
                     continue
 
-                geometry_str = json.dumps(raw_geometry)
-                boundary = GEOSGeometry(geometry_str)
+                geos_geom = GEOSGeometry(raw_geom.wkb_hex, srid=4326)
+                boundary  = _to_multipolygon(geos_geom)
 
-                # If the model expects a Polygon but the GeoJSON supplies a
-                # MultiPolygon, extract the largest component polygon so the
-                # insert doesn't fail with a geometry-type mismatch.
-                if boundary.geom_type == 'MultiPolygon':
-                    boundary = max(boundary, key=lambda poly: poly.area)
-
-                # Upsert
                 _obj, created = Constituency.objects.update_or_create(
                     name=name,
-                    defaults={
-                        'district': district,
-                        'boundary': boundary,
-                    },
+                    defaults={'district': district, 'boundary': boundary},
                 )
 
                 action = 'Created' if created else 'Updated'
-                print(f"  [{idx}] {action}: {name}  (district: {district})")
+                print(f"  [{seq:>3}] {action}: {name}  ({district})")
                 loaded += 1
 
-            except Exception as e:
-                print(f"  [{idx}] Error loading feature: {e}")
+            except Exception as exc:
+                print(f"  [{seq:>3}] ERROR – {exc}")
                 skipped += 1
 
-    # --- Summary ------------------------------------------------------------
+    total_in_db = Constituency.objects.count()
     print(
-        f"\n{'─' * 50}"
-        f"\n  Loaded : {loaded}"
-        f"\n  Skipped: {skipped}"
-        f"\n  Total  : {loaded + skipped}"
-        f"\n{'─' * 50}"
+        f"\n{'─' * 55}"
+        f"\n  Loaded  : {loaded}"
+        f"\n  Skipped : {skipped}"
+        f"\n  Total in DB: {total_in_db}"
+        f"\n{'─' * 55}"
     )
 
 
-# ---------------------------------------------------------------------------
-# 4. CLI entry-point
-# ---------------------------------------------------------------------------
-if __name__ == '__main__':
-    filepath = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_GEOJSON_PATH
-
-    print(f"Loading from {filepath}")
-    print(f"{'─' * 50}\n")
-
-    start = time.perf_counter()
-    load_from_geojson(filepath)
-    elapsed = time.perf_counter() - start
-
-    print(f"\nDone. Total constituencies: {Constituency.objects.count()}")
-    print(f"Elapsed: {elapsed:.2f}s")
+_start = time.perf_counter()
+load_karnataka_constituencies()
+print(f"\nElapsed: {time.perf_counter() - _start:.2f}s")
