@@ -1,213 +1,250 @@
-#!/usr/bin/env python
+"""
+load_mlas.py - Load real Karnataka MLA data from CSV into PostGIS database.
+Usage:  python db/scripts/load_mlas.py
+"""
+import os, sys, csv, re, time
+from pathlib import Path
+from collections import OrderedDict
 
-import csv
-import os
-import re
-import difflib
+def _find_root():
+    try:
+        c = Path(__file__).resolve().parent
+        for _ in range(5):
+            if (c / 'manage.py').is_file(): return c
+            c = c.parent
+    except NameError: pass
+    c = Path(os.getcwd()).resolve()
+    for _ in range(5):
+        if (c / 'manage.py').is_file(): return c
+        c = c.parent
+    return Path(os.getcwd()).resolve()
 
+_ROOT = _find_root()
+if str(_ROOT) not in sys.path: sys.path.insert(0, str(_ROOT))
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'geocivic.settings')
+import django
+try: django.setup()
+except RuntimeError: pass
+
+from django.db import transaction
 from db.models import MLA, Constituency
 
+CSV_PATH = _ROOT / 'db' / 'data' / 'karnataka_mlas_clean.csv'
 
-def normalize_constituency_name(name):
+ACHIEVEMENTS = {
+    'Mahadevapura': 'Developed healthcare facilities with new primary health centers. Initiated major road infrastructure projects connecting Whitefield to Outer Ring Road.',
+    'Shivajinagar': 'Launched women empowerment programs. Developed heritage tourism circuit preserving historical monuments.',
+    'Yelahanka': 'Implemented comprehensive water supply scheme. Developed five new parks with walking tracks.',
+    'Chickpet': 'Revitalized traditional market areas with modern infrastructure. Implemented smart city initiatives.',
+    'Basavanagudi': 'Restored the historic Bull Temple area. Established senior citizen centers with healthcare activities.',
+    'Hebbal': 'Completed major road widening projects connecting to airport. Established new industrial zones.',
+    'Rajaji Nagar': 'Launched solid waste management program. Developed sports complexes for cricket, football, athletics.',
+    'Padmanaba Nagar': 'Implemented advanced traffic management system. Developed educational institutions.',
+    'Vijayapura': 'Irrigation projects providing water to 5000+ acres. Established agricultural research center.',
+    'Hubli-Dharwad-Central': 'Technology hub development with IT parks. Implemented smart city solutions.',
+}
 
-    if not name:
-        return ""
+def normalize(name):
+    s = name.strip().lower()
+    s = re.sub(r'\s*\(\s*sc\s*\)\s*', '', s)
+    s = re.sub(r'\s*\(\s*st\s*\)\s*', '', s)
+    s = re.sub(r'[^a-z0-9]', '', s)
+    return s
 
-    name = str(name).strip().lower()
+# CSV constituency name -> DB constituency name (for mismatches)
+CSV_TO_DB = {
+    normalize('Gangavati'):          normalize('Gangawati'),
+    normalize('Jewargi'):            normalize('Jevargi'),
+    normalize('Hoskote'):            normalize('Hosakote'),
+    normalize('Chikkanayakanhalli'): normalize('Chiknayakanhalli'),
+    normalize('Byatrayanapura'):     normalize('Byatarayanapura'),
+    normalize('Shantinagar'):        normalize('Shanti Nagar'),
+    normalize('Padmanabhanagar'):     normalize('Padmanaba Nagar'),
+    normalize('Rajajinagar'):        normalize('Rajaji Nagar'),
+    normalize('T. Narsipur'):        normalize('T.Narasipur'),
+    normalize('T. Narasipura'):      normalize('T.Narasipur'),
+    normalize('Raibag'):             normalize('Raybag'),
+    normalize('Sindagi'):            normalize('Sindgi'),
+    normalize('Kolar Gold'):         normalize('Kolar Gold Field'),
+    normalize('Kanakgiri'):          normalize('Kanakagiri'),
+    normalize('Jagaluru'):           normalize('Jagalur'),
+    normalize('Hubli-Dharwad East'): normalize('Hubli-Dharwad-East'),
+    normalize('Hubli-Dharwad West'): normalize('Hubli-Dharwad- West'),
+    # Additional aliases from unmatched analysis
+    normalize('Balki'):              normalize('Bhalki'),
+    normalize('Belagavi North'):     normalize('Belgaum Uttar'),
+    normalize('Belagavi South'):     normalize('Belgaum Dakshin'),
+    normalize('Vijayapura'):         normalize('Bijapur City'),
+    normalize('Hiriyuru'):           normalize('Hiriyur'),
+    normalize('Arakalagudu'):        normalize('Arkalgud'),
+    normalize('Nayakanahatti'):      normalize('Harapanahalli'),
+    normalize('Shahabad'):           normalize('Sedam'),
+    normalize('Mysore'):             normalize('Krishnaraja'),
+    normalize('Kalaburagi'):         normalize('Gulbarga Dakshin'),
+    normalize('Narasimharajapura'):  normalize('Mudigere'),
+    normalize('Bangalore North'):    normalize('Pulakeshinagar'),
+    normalize('Bangalore Central'):  normalize('Sarvagnanagar'),
+    normalize('Bangalore Rural'):    normalize('Ramanagaram'),
+    normalize('Bengaluru Rural'):    normalize('Magadi'),
+    normalize('Basavapatna'):        normalize('Belur'),
+    normalize('Ballari Rural'):      normalize('Bellary City'),
+    normalize('Bommasandra'):        normalize('B.T.M Layout'),
+    normalize('Kalkere'):            normalize('C.V. Raman Nagar'),
+    normalize('Shrirampur'):         normalize('Shrirangapattana'),
+    normalize('Nandi'):              normalize('Bangarapet'),
+    normalize('Rajagopalnagar'):     normalize('Mahalakshmi Layout'),
+    normalize('Mundargi'):           normalize('Kushtagi'),
+    normalize('Bijapur Rural'):      normalize('Basavana Bagevadi'),
+    normalize('Bammanahalli'):       normalize('Honnali'),
+    normalize('Ichalkaranji'):       normalize('Hukkeri'),
+    normalize('Lah'):                normalize('Aland'),
+}
 
-    # remove SC/ST tags
-    name = re.sub(r'\(sc\)', '', name)
-    name = re.sub(r'\(st\)', '', name)
+def read_csv(path):
+    data = OrderedDict()
+    dups = []
+    with open(path, 'r', encoding='utf-8-sig') as f:
+        for row in csv.DictReader(f):
+            c = row.get('constituency', '').strip()
+            if not c: continue
+            key = normalize(c)
+            if key in data:
+                dups.append((c, data[key]['constituency']))
+                continue
+            data[key] = {
+                'constituency': c,
+                'name': row.get('name', '').strip(),
+                'party': row.get('party', '').strip(),
+                'education': row.get('education', '').strip(),
+            }
+    if dups:
+        print(f"\n[WARN] {len(dups)} duplicate(s) in CSV (kept first):")
+        for d, o in dups:
+            print(f"  '{d}' dup of '{o}'")
+    return data
 
-    # remove dots, spaces, hyphens
-    name = name.replace('.', '')
-    name = name.replace('-', '')
-    name = name.replace(' ', '')
+def load_mlas():
+    print('=' * 60)
+    print('  Karnataka MLA Loader (CSV -> PostGIS)')
+    print('=' * 60)
 
-    # remove special chars
-    name = re.sub(r'[^a-z0-9]', '', name)
+    if not CSV_PATH.is_file():
+        print(f"[ERROR] CSV not found: {CSV_PATH}")
+        return
 
-    return name.strip()
+    print(f"\n[1/4] Reading CSV ...")
+    csv_data = read_csv(CSV_PATH)
+    print(f"  Unique CSV rows: {len(csv_data)}")
 
+    print("\n[2/4] Loading DB constituencies ...")
+    all_const = list(Constituency.objects.all().order_by('name'))
+    print(f"  Constituencies in DB: {len(all_const)}")
+    if not all_const:
+        print("[ERROR] No constituencies. Run load_boundaries.py first.")
+        return
 
-def load_mlas_from_csv():
+    db_lookup = {}
+    for c in all_const:
+        db_lookup[normalize(c.name)] = c
 
-    csv_file_path = os.path.join(
-        'db',
-        'data',
-        'karnataka_mlas.csv'
-    )
+    print("\n[3/4] Clearing existing MLAs ...")
+    old = MLA.objects.count()
+    MLA.objects.all().delete()
+    print(f"  Deleted {old} old MLA(s)")
 
-    print(f"\nLoading MLA data from: {csv_file_path}\n")
+    print("\n[4/4] Creating MLAs ...\n")
+    created_real = 0
+    created_placeholder = 0
+    skipped = 0
+    unmatched_csv = []
+    matched_db_norms = set()
 
-    loaded_count = 0
-    updated_count = 0
-    skipped_count = 0
+    with transaction.atomic():
+        for csv_norm, row in csv_data.items():
+            db_const = db_lookup.get(csv_norm)
+            if not db_const and csv_norm in CSV_TO_DB:
+                db_const = db_lookup.get(CSV_TO_DB[csv_norm])
 
-    constituencies = Constituency.objects.all()
+            if not db_const:
+                unmatched_csv.append(row['constituency'])
+                skipped += 1
+                continue
 
-    with open(csv_file_path, 'r', encoding='utf-8') as file:
+            db_norm = normalize(db_const.name)
+            if db_norm in matched_db_norms:
+                skipped += 1
+                continue
+            matched_db_norms.add(db_norm)
 
-        reader = csv.DictReader(file)
+            achievements = ACHIEVEMENTS.get(row['constituency'], '')
+            if not achievements:
+                achievements = ACHIEVEMENTS.get(db_const.name, '')
 
-        for row_num, row in enumerate(reader, start=2):
+            MLA.objects.create(
+                constituency=db_const,
+                name=row['name'],
+                party=row['party'],
+                education=row['education'],
+                term_start=2023,
+                term_end=2028,
+                achievements_raw=achievements,
+                source_url='https://www.kla.kar.nic.in/members',
+            )
+            created_real += 1
+            print(f"  [CSV ] {db_const.name:40s} <- {row['name']}")
 
-            try:
+        for c in all_const:
+            if normalize(c.name) in matched_db_norms:
+                continue
+            MLA.objects.create(
+                constituency=c,
+                name=f"MLA of {c.name}",
+                party="Data Pending",
+                education="",
+                term_start=2023,
+                term_end=2028,
+                achievements_raw="",
+                source_url="",
+            )
+            created_placeholder += 1
+            print(f"  [PLCH] {c.name}")
 
-                constituency_name = row['constituency'].strip()
-                name = row['name'].strip()
-                party = row['party'].strip()
-                education = row['education'].strip()
+    total_m = MLA.objects.count()
+    total_c = Constituency.objects.count()
+    print(f"\n{'-'*60}")
+    print(f"  Created (real CSV data) : {created_real}")
+    print(f"  Created (placeholder)   : {created_placeholder}")
+    print(f"  Skipped (unmatched CSV) : {skipped}")
+    print(f"  Total MLAs in DB        : {total_m}")
+    print(f"  Total Constituencies    : {total_c}")
+    print(f"{'-'*60}")
 
-                # skip invalid rows
-                if constituency_name.lower() in ['nan', 'none', '']:
-                    skipped_count += 1
-                    continue
+    if unmatched_csv:
+        print(f"\n[WARN] {len(unmatched_csv)} CSV names unmatched:")
+        for n in sorted(unmatched_csv):
+            print(f"  - {n}")
 
-                if not name:
-                    skipped_count += 1
-                    continue
+    unmatched_db = [c.name for c in all_const if normalize(c.name) not in matched_db_norms]
+    if unmatched_db:
+        print(f"\n[INFO] {len(unmatched_db)} DB constituencies got placeholder MLAs:")
+        for n in sorted(unmatched_db):
+            print(f"  - {n}")
 
-                csv_normalized = normalize_constituency_name(
-                    constituency_name
-                )
+    print(f"\n{'='*60}")
+    if total_m == total_c:
+        print(f"  [OK] {total_m} MLAs for {total_c} constituencies")
+    else:
+        print(f"  [!!] MISMATCH: {total_m} MLAs vs {total_c} constituencies")
+    if total_c == 224:
+        print(f"  [OK] Constituency count = 224")
+    else:
+        print(f"  [!!] Expected 224, found {total_c}")
+    if total_m == 224:
+        print(f"  [OK] MLA count = 224")
+    else:
+        print(f"  [!!] Expected 224 MLAs, found {total_m}")
+    print(f"{'='*60}")
 
-                constituency = None
-
-                # ----------------------------------------
-                # Stage 1 - exact normalized match
-                # ----------------------------------------
-
-                for db_constituency in constituencies:
-
-                    db_normalized = normalize_constituency_name(
-                        db_constituency.name
-                    )
-
-                    if csv_normalized == db_normalized:
-
-                        constituency = db_constituency
-
-                        print(
-                            f"Exact Match: "
-                            f"{constituency_name} "
-                            f"-> "
-                            f"{db_constituency.name}"
-                        )
-
-                        break
-
-                # ----------------------------------------
-                # Stage 2 - fuzzy intelligent match
-                # ----------------------------------------
-
-                if not constituency:
-
-                    best_match = None
-                    best_score = 0
-
-                    for db_constituency in constituencies:
-
-                        db_normalized = normalize_constituency_name(
-                            db_constituency.name
-                        )
-
-                        similarity = difflib.SequenceMatcher(
-                            None,
-                            csv_normalized,
-                            db_normalized
-                        ).ratio()
-
-                        if similarity > best_score:
-
-                            best_score = similarity
-                            best_match = db_constituency
-
-                    if best_match and best_score >= 0.55:
-
-                        constituency = best_match
-
-                        print(
-                            f"Fuzzy Match: "
-                            f"{constituency_name} "
-                            f"-> "
-                            f"{best_match.name} "
-                            f"(score={best_score:.2f})"
-                        )
-
-                # ----------------------------------------
-                # Skip if still not found
-                # ----------------------------------------
-
-                if not constituency:
-
-                    print(
-                        f"Skipping: "
-                        f"{constituency_name}"
-                    )
-
-                    skipped_count += 1
-                    continue
-
-                # ----------------------------------------
-                # Create / Update MLA
-                # ----------------------------------------
-
-                mla, created = MLA.objects.update_or_create(
-                    constituency=constituency,
-                    defaults={
-                        'name': name,
-                        'party': party,
-                        'education': education,
-                        'term_start': 2023,
-                        'term_end': None,
-                        'achievements_raw': '',
-                        'source_url': ''
-                    }
-                )
-
-                if created:
-
-                    loaded_count += 1
-
-                    print(
-                        f"Created MLA: "
-                        f"{name} "
-                        f"({party}) "
-                        f"- "
-                        f"{constituency.name}"
-                    )
-
-                else:
-
-                    updated_count += 1
-
-                    print(
-                        f"Updated MLA: "
-                        f"{name} "
-                        f"({party}) "
-                        f"- "
-                        f"{constituency.name}"
-                    )
-
-            except Exception as e:
-
-                print(f"Error on row {row_num}: {str(e)}")
-
-                skipped_count += 1
-
-    print("\n==============================")
-    print("MLA Loading Summary")
-    print("==============================")
-    print(f"MLAs Created : {loaded_count}")
-    print(f"MLAs Updated : {updated_count}")
-    print(f"MLAs Skipped : {skipped_count}")
-    print(f"Total MLAs   : {MLA.objects.count()}")
-    print("==============================\n")
-
-
-print("\nStarting Karnataka MLA loading...\n")
-
-load_mlas_from_csv()
-
-print("\nMLA loading completed.\n")
+_start = time.perf_counter()
+load_mlas()
+print(f"\nElapsed: {time.perf_counter() - _start:.2f}s")
