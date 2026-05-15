@@ -1,5 +1,5 @@
 """
-load_mlas.py - Load real Karnataka MLA data from CSV into PostGIS database.
+load_mlas.py - Load verified 2023 Karnataka MLA data from CSV into PostGIS database.
 Usage:  python db/scripts/load_mlas.py
 """
 import os, sys, csv, re, time
@@ -31,76 +31,16 @@ from db.models import MLA, Constituency
 
 CSV_PATH = _ROOT / 'db' / 'data' / 'karnataka_mlas_clean.csv'
 
-ACHIEVEMENTS = {
-    'Mahadevapura': 'Developed healthcare facilities with new primary health centers. Initiated major road infrastructure projects connecting Whitefield to Outer Ring Road.',
-    'Shivajinagar': 'Launched women empowerment programs. Developed heritage tourism circuit preserving historical monuments.',
-    'Yelahanka': 'Implemented comprehensive water supply scheme. Developed five new parks with walking tracks.',
-    'Chickpet': 'Revitalized traditional market areas with modern infrastructure. Implemented smart city initiatives.',
-    'Basavanagudi': 'Restored the historic Bull Temple area. Established senior citizen centers with healthcare activities.',
-    'Hebbal': 'Completed major road widening projects connecting to airport. Established new industrial zones.',
-    'Rajaji Nagar': 'Launched solid waste management program. Developed sports complexes for cricket, football, athletics.',
-    'Padmanaba Nagar': 'Implemented advanced traffic management system. Developed educational institutions.',
-    'Vijayapura': 'Irrigation projects providing water to 5000+ acres. Established agricultural research center.',
-    'Hubli-Dharwad-Central': 'Technology hub development with IT parks. Implemented smart city solutions.',
-}
-
 def normalize(name):
+    """Normalize constituency name for matching: lowercase, strip SC/ST tags, remove non-alphanumeric."""
     s = name.strip().lower()
     s = re.sub(r'\s*\(\s*sc\s*\)\s*', '', s)
     s = re.sub(r'\s*\(\s*st\s*\)\s*', '', s)
     s = re.sub(r'[^a-z0-9]', '', s)
     return s
 
-# CSV constituency name -> DB constituency name (for mismatches)
-CSV_TO_DB = {
-    normalize('Gangavati'):          normalize('Gangawati'),
-    normalize('Jewargi'):            normalize('Jevargi'),
-    normalize('Hoskote'):            normalize('Hosakote'),
-    normalize('Chikkanayakanhalli'): normalize('Chiknayakanhalli'),
-    normalize('Byatrayanapura'):     normalize('Byatarayanapura'),
-    normalize('Shantinagar'):        normalize('Shanti Nagar'),
-    normalize('Padmanabhanagar'):     normalize('Padmanaba Nagar'),
-    normalize('Rajajinagar'):        normalize('Rajaji Nagar'),
-    normalize('T. Narsipur'):        normalize('T.Narasipur'),
-    normalize('T. Narasipura'):      normalize('T.Narasipur'),
-    normalize('Raibag'):             normalize('Raybag'),
-    normalize('Sindagi'):            normalize('Sindgi'),
-    normalize('Kolar Gold'):         normalize('Kolar Gold Field'),
-    normalize('Kanakgiri'):          normalize('Kanakagiri'),
-    normalize('Jagaluru'):           normalize('Jagalur'),
-    normalize('Hubli-Dharwad East'): normalize('Hubli-Dharwad-East'),
-    normalize('Hubli-Dharwad West'): normalize('Hubli-Dharwad- West'),
-    # Additional aliases from unmatched analysis
-    normalize('Balki'):              normalize('Bhalki'),
-    normalize('Belagavi North'):     normalize('Belgaum Uttar'),
-    normalize('Belagavi South'):     normalize('Belgaum Dakshin'),
-    normalize('Vijayapura'):         normalize('Bijapur City'),
-    normalize('Hiriyuru'):           normalize('Hiriyur'),
-    normalize('Arakalagudu'):        normalize('Arkalgud'),
-    normalize('Nayakanahatti'):      normalize('Harapanahalli'),
-    normalize('Shahabad'):           normalize('Sedam'),
-    normalize('Mysore'):             normalize('Krishnaraja'),
-    normalize('Kalaburagi'):         normalize('Gulbarga Dakshin'),
-    normalize('Narasimharajapura'):  normalize('Mudigere'),
-    normalize('Bangalore North'):    normalize('Pulakeshinagar'),
-    normalize('Bangalore Central'):  normalize('Sarvagnanagar'),
-    normalize('Bangalore Rural'):    normalize('Ramanagaram'),
-    normalize('Bengaluru Rural'):    normalize('Magadi'),
-    normalize('Basavapatna'):        normalize('Belur'),
-    normalize('Ballari Rural'):      normalize('Bellary City'),
-    normalize('Bommasandra'):        normalize('B.T.M Layout'),
-    normalize('Kalkere'):            normalize('C.V. Raman Nagar'),
-    normalize('Shrirampur'):         normalize('Shrirangapattana'),
-    normalize('Nandi'):              normalize('Bangarapet'),
-    normalize('Rajagopalnagar'):     normalize('Mahalakshmi Layout'),
-    normalize('Mundargi'):           normalize('Kushtagi'),
-    normalize('Bijapur Rural'):      normalize('Basavana Bagevadi'),
-    normalize('Bammanahalli'):       normalize('Honnali'),
-    normalize('Ichalkaranji'):       normalize('Hukkeri'),
-    normalize('Lah'):                normalize('Aland'),
-}
-
 def read_csv(path):
+    """Read CSV and return OrderedDict keyed by normalized constituency name."""
     data = OrderedDict()
     dups = []
     with open(path, 'r', encoding='utf-8-sig') as f:
@@ -126,6 +66,7 @@ def read_csv(path):
 def load_mlas():
     print('=' * 60)
     print('  Karnataka MLA Loader (CSV -> PostGIS)')
+    print('  Source: 2023 Karnataka Assembly Election Results')
     print('=' * 60)
 
     if not CSV_PATH.is_file():
@@ -153,8 +94,7 @@ def load_mlas():
     print(f"  Deleted {old} old MLA(s)")
 
     print("\n[4/4] Creating MLAs ...\n")
-    created_real = 0
-    created_placeholder = 0
+    created = 0
     skipped = 0
     unmatched_csv = []
     matched_db_norms = set()
@@ -162,8 +102,6 @@ def load_mlas():
     with transaction.atomic():
         for csv_norm, row in csv_data.items():
             db_const = db_lookup.get(csv_norm)
-            if not db_const and csv_norm in CSV_TO_DB:
-                db_const = db_lookup.get(CSV_TO_DB[csv_norm])
 
             if not db_const:
                 unmatched_csv.append(row['constituency'])
@@ -176,10 +114,6 @@ def load_mlas():
                 continue
             matched_db_norms.add(db_norm)
 
-            achievements = ACHIEVEMENTS.get(row['constituency'], '')
-            if not achievements:
-                achievements = ACHIEVEMENTS.get(db_const.name, '')
-
             MLA.objects.create(
                 constituency=db_const,
                 name=row['name'],
@@ -187,36 +121,19 @@ def load_mlas():
                 education=row['education'],
                 term_start=2023,
                 term_end=2028,
-                achievements_raw=achievements,
-                source_url='https://www.kla.kar.nic.in/members',
+                achievements_raw='',
+                source_url='https://results.eci.gov.in/',
             )
-            created_real += 1
-            print(f"  [CSV ] {db_const.name:40s} <- {row['name']}")
-
-        for c in all_const:
-            if normalize(c.name) in matched_db_norms:
-                continue
-            MLA.objects.create(
-                constituency=c,
-                name=f"MLA of {c.name}",
-                party="Data Pending",
-                education="",
-                term_start=2023,
-                term_end=2028,
-                achievements_raw="",
-                source_url="",
-            )
-            created_placeholder += 1
-            print(f"  [PLCH] {c.name}")
+            created += 1
+            print(f"  [{created:3d}] {db_const.name:40s} <- {row['name']} ({row['party']})")
 
     total_m = MLA.objects.count()
     total_c = Constituency.objects.count()
     print(f"\n{'-'*60}")
-    print(f"  Created (real CSV data) : {created_real}")
-    print(f"  Created (placeholder)   : {created_placeholder}")
-    print(f"  Skipped (unmatched CSV) : {skipped}")
-    print(f"  Total MLAs in DB        : {total_m}")
-    print(f"  Total Constituencies    : {total_c}")
+    print(f"  Created (verified data)  : {created}")
+    print(f"  Skipped (unmatched CSV)  : {skipped}")
+    print(f"  Total MLAs in DB         : {total_m}")
+    print(f"  Total Constituencies     : {total_c}")
     print(f"{'-'*60}")
 
     if unmatched_csv:
@@ -226,23 +143,72 @@ def load_mlas():
 
     unmatched_db = [c.name for c in all_const if normalize(c.name) not in matched_db_norms]
     if unmatched_db:
-        print(f"\n[INFO] {len(unmatched_db)} DB constituencies got placeholder MLAs:")
+        print(f"\n[WARN] {len(unmatched_db)} DB constituencies have NO MLA:")
         for n in sorted(unmatched_db):
             print(f"  - {n}")
 
+    # Duplicate checks
+    from django.db.models import Count
+    dup_mlas = MLA.objects.values('name').annotate(cnt=Count('id')).filter(cnt__gt=1)
+    dup_const = MLA.objects.values('constituency').annotate(cnt=Count('id')).filter(cnt__gt=1)
+
     print(f"\n{'='*60}")
-    if total_m == total_c:
-        print(f"  [OK] {total_m} MLAs for {total_c} constituencies")
-    else:
-        print(f"  [!!] MISMATCH: {total_m} MLAs vs {total_c} constituencies")
-    if total_c == 224:
-        print(f"  [OK] Constituency count = 224")
-    else:
-        print(f"  [!!] Expected 224, found {total_c}")
+    print(f"  VALIDATION RESULTS")
+    print(f"{'='*60}")
+
+    checks_passed = True
+
     if total_m == 224:
-        print(f"  [OK] MLA count = 224")
+        print(f"  [OK] MLA count = {total_m}")
     else:
         print(f"  [!!] Expected 224 MLAs, found {total_m}")
+        checks_passed = False
+
+    if total_c == 224:
+        print(f"  [OK] Constituency count = {total_c}")
+    else:
+        print(f"  [!!] Expected 224 constituencies, found {total_c}")
+        checks_passed = False
+
+    if total_m == total_c:
+        print(f"  [OK] MLA count matches constituency count")
+    else:
+        print(f"  [!!] MISMATCH: {total_m} MLAs vs {total_c} constituencies")
+        checks_passed = False
+
+    if not dup_const.exists():
+        print(f"  [OK] No duplicate constituency assignments")
+    else:
+        print(f"  [!!] Duplicate constituency assignments found!")
+        checks_passed = False
+
+    # Mandatory manual validation
+    print(f"\n{'-'*60}")
+    print(f"  MANDATORY MANUAL VALIDATION")
+    print(f"{'-'*60}")
+    validations = {
+        'Varuna': 'Siddaramaiah',
+        'Kanakapura': 'D. K. Shivakumar',
+        'Shiggaon': 'Basavaraj Bommai',
+        'Mahadevapura': 'Manjula S',
+    }
+    for const_name, expected_mla in validations.items():
+        try:
+            mla = MLA.objects.get(constituency__name=const_name)
+            if expected_mla.lower() in mla.name.lower():
+                print(f"  [OK] {const_name:20s} -> {mla.name} ({mla.party})")
+            else:
+                print(f"  [!!] {const_name:20s} -> {mla.name} (expected: {expected_mla})")
+                checks_passed = False
+        except MLA.DoesNotExist:
+            print(f"  [!!] {const_name:20s} -> NO MLA FOUND!")
+            checks_passed = False
+
+    print(f"\n{'='*60}")
+    if checks_passed:
+        print(f"  ALL CHECKS PASSED")
+    else:
+        print(f"  SOME CHECKS FAILED - Review output above")
     print(f"{'='*60}")
 
 _start = time.perf_counter()
