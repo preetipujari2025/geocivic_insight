@@ -46,7 +46,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -58,10 +58,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD
     'django.contrib.gis',  # GeoDjango / PostGIS support
     'db',     
     'rest_framework',
     'rest_framework_gis',             # GeoCivic spatial data models
+=======
+    # 'django.contrib.gis',  # Completely disabled - GeoDjango / PostGIS support
+    'db',                  # Re-enabled for testing (models work without GIS)
+    'api',                  # Re-enabled for API functionality
+>>>>>>> 93da3f46d34717aee5283fc5c58b966410a8be70
 ]
 
 MIDDLEWARE = [
@@ -100,12 +106,8 @@ WSGI_APPLICATION = 'geocivic.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': env('DB_NAME', default='geocivic'),
-        'USER': env('DB_USER', default='postgres'),
-        'PASSWORD': env('DB_PASSWORD', default=''),
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default='5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

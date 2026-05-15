@@ -1,5 +1,7 @@
 Django>=4.2,<5.0
 django-environ>=0.11
-psycopg2-binary>=2.9        # PostgreSQL driver (use psycopg2 in production)
-GDAL>=3.0                   # Geospatial Data Abstraction Library
+# psycopg2-binary>=2.9        # PostgreSQL driver (temporarily disabled)
+# GDAL>=3.0                   # Geospatial Data Abstraction Library (temporarily disabled)
 djangorestframework>=3.14   # REST API support
+pytest>=7.0                 # Testing framework
+requests>=2.28               # HTTP requests library

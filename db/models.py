@@ -1,10 +1,14 @@
-from django.contrib.gis.db import models
+from django.db import models
 
 
 class Constituency(models.Model):
     name = models.CharField(max_length=200)
     district = models.CharField(max_length=200)
+<<<<<<< HEAD
     boundary = models.MultiPolygonField()
+=======
+    boundary = models.TextField(blank=True)  # Temporarily store as JSON text instead of GIS field
+>>>>>>> 93da3f46d34717aee5283fc5c58b966410a8be70
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

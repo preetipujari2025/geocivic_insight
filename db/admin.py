@@ -1,9 +1,9 @@
-from django.contrib.gis import admin
+from django.contrib import admin
 from db.models import Constituency, MLA, MP, ElectionResult
 
 
 @admin.register(Constituency)
-class ConstituencyAdmin(admin.GISModelAdmin):
+class ConstituencyAdmin(admin.ModelAdmin):
     list_display = ['name', 'district', 'created_at']
     search_fields = ['name', 'district']
 

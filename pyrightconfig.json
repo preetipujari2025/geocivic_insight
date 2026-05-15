@@ -1,0 +1,14 @@
+{
+  "venvPath": "c:\\Users\\HP\\geocivic_insight",
+  "venv": "venv",
+  "extraPaths": [
+    "c:\\Users\\HP\\geocivic_insight\\venv\\Lib\\site-packages",
+    "c:\\Users\\HP\\geocivic_insight"
+  ],
+  "include": [
+    "api",
+    "geocivic",
+    "tests"
+  ],
+  "typeCheckingMode": "basic"
+}

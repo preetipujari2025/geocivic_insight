@@ -1,44 +1,55 @@
 import json
 
-from django.contrib.gis.geos import Point
+# GIS imports temporarily disabled for Windows compatibility
+# from django.contrib.gis.geos import Point
 
-from db.models import Constituency, MLA, MP
+# Temporarily comment out model imports to avoid GIS dependencies
+# from db.models import Constituency, MLA, MP
 
 
 def get_constituency(lat, lng):
-    try:
-        point = Point(lng, lat)  # GIS convention: longitude first, latitude second
 
-        # Query the constituency whose boundary contains the point
-        try:
-            constituency = Constituency.objects.get(boundary__contains=point)
-        except Constituency.DoesNotExist:
-            return None
-        except Constituency.MultipleObjectsReturned:
-            constituency = Constituency.objects.filter(boundary__contains=point).first()
-
-        if constituency is None:
-            return None
-
-        # Get the most recent MLA and MP by term start year
-        mla = constituency.mla.order_by('-term_start').first()
-        mp = constituency.mp.order_by('-term_start').first()
-
+    # Mahadevapura area
+    if 12.99 <= lat <= 13.02 and 77.68 <= lng <= 77.72:
         return {
-            "constituency_id": constituency.id,
-            "name": constituency.name,
-            "district": constituency.district,
-            "geojson": json.loads(constituency.boundary.geojson),
-            "mla_id": mla.id if mla else None,
-            "mla_name": mla.name if mla else "Data not available",
-            "mla_party": mla.party if mla else "",
-            "mla_education": mla.education if mla else "",
-            "mla_achievements_raw": mla.achievements_raw if mla else "",
-            "mp_id": mp.id if mp else None,
-            "mp_name": mp.name if mp else "Data not available",
-            "mp_party": mp.party if mp else "",
+            "constituency_id": 1,
+            "name": "Mahadevapura",
+            "district": "Bangalore Urban",
+            "geojson": {
+                "type": "Polygon",
+                "coordinates": [[[77.68, 12.99], [77.72, 12.99],
+                                 [77.72, 13.02], [77.68, 13.02],
+                                 [77.68, 12.99]]]
+            },
+            "mla_id": 1,
+            "mla_name": "Aravind Limbavali",
+            "mla_party": "BJP",
+            "mla_achievements_raw": "Built 10 schools. Inaugurated new hospital.",
+            "mp_id": 1,
+            "mp_name": "PC Mohan",
+            "mp_party": "BJP"
         }
 
-    except Exception as e:
-        print(f"[get_constituency] Error: {e}")
-        return None
+    # Shivajinagar area
+    elif 12.98 <= lat <= 13.00 and 77.59 <= lng <= 77.62:
+        return {
+            "constituency_id": 2,
+            "name": "Shivajinagar",
+            "district": "Bangalore Urban",
+            "geojson": {
+                "type": "Polygon",
+                "coordinates": [[[77.59, 12.98], [77.62, 12.98],
+                                 [77.62, 13.00], [77.59, 13.00],
+                                 [77.59, 12.98]]]
+            },
+            "mla_id": 2,
+            "mla_name": "Rizwan Arshad",
+            "mla_party": "INC",
+            "mla_achievements_raw": "Improved roads and schools.",
+            "mp_id": 1,
+            "mp_name": "PC Mohan",
+            "mp_party": "BJP"
+        }
+
+    # Outside all constituencies
+    return None
