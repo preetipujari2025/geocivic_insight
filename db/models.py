@@ -32,7 +32,8 @@ class MLA(models.Model):
 
 class MP(models.Model):
     constituency = models.ForeignKey(
-        Constituency, on_delete=models.CASCADE, related_name='mp'
+        Constituency, on_delete=models.SET_NULL, related_name='mp',
+        null=True, blank=True
     )
     name = models.CharField(max_length=200)
     party = models.CharField(max_length=200)

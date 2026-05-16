@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MLA, Constituency
+from .models import MLA, MP, Constituency
 
 
 class ConstituencySerializer(serializers.ModelSerializer):
@@ -14,3 +14,21 @@ class MLASerializer(serializers.ModelSerializer):
     class Meta:
         model = MLA
         fields = "__all__"
+
+
+class MPSerializer(serializers.ModelSerializer):
+    constituency_name = serializers.CharField(
+        source='constituency.name', read_only=True, default=None
+    )
+
+    class Meta:
+        model = MP
+        fields = [
+            'id',
+            'name',
+            'party',
+            'lok_sabha_seat',
+            'term_start',
+            'term_end',
+            'constituency_name',
+        ]
