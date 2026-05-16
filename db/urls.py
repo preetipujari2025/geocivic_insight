@@ -7,6 +7,7 @@ from .views import (
     MPDetailView,
     ConstituencyListView,
     ConstituencyDetailView,
+    FindRepresentativesView,
 )
 
 urlpatterns = [
@@ -21,4 +22,7 @@ urlpatterns = [
     # Constituency APIs
     path('constituencies/', ConstituencyListView.as_view(), name='constituency-list'),
     path('constituencies/<int:pk>/', ConstituencyDetailView.as_view(), name='constituency-detail'),
+
+    # Representative Lookup API
+    path('find-representatives/', FindRepresentativesView.as_view(), name='find-representatives'),
 ]
