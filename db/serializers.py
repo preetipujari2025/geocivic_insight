@@ -18,7 +18,7 @@ class MLASerializer(serializers.ModelSerializer):
 
 class MPSerializer(serializers.ModelSerializer):
     constituency_name = serializers.CharField(
-        source='constituency.name', read_only=True, default=None
+        source='lok_sabha_seat', read_only=True
     )
 
     class Meta:
