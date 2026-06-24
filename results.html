@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoCivic Insight - Results</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        :root {
+            --bg-color: #0f1117;
+            --text-color: #ffffff;
+            --accent-color: #22c55e;
+            --surface-color: #1f2937;
+            --border-color: #374151;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+        }
+
+        .back-button {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-bar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .dashboard {
+            display: flex;
+            flex-direction: row;
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            flex-grow: 1;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-left {
+            flex: 1;
+        }
+
+        .panel-center {
+            flex: 2;
+        }
+
+        .panel-right {
+            flex: 1;
+        }
+
+        /* Typography & elements inside cards */
+        .card-badge {
+            display: inline-block;
+            background-color: #374151;
+            color: #d1d5db;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+            align-self: flex-start;
+        }
+
+        .name {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .party {
+            color: var(--accent-color);
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+        }
+
+        .district {
+            color: var(--text-muted);
+            margin: 0 0 1rem 0;
+        }
+
+        .education {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .achievements-list {
+            margin: 0 0 1.5rem 0;
+            padding-left: 1.25rem;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+
+        .achievements-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sentiment-container {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        #sentiment-badge {
+            display: inline-block;
+            color: #fff;
+            font-weight: 800;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .sentiment-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .view-map-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: auto;
+        }
+
+        .view-map-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .dashboard {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="/map.html" class="back-button">←</a>
+        <h1 class="top-bar-title">Leader Profiles</h1>
+    </div>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loading-text">Loading profiles...</div>
+    </div>
+
+    <div id="dashboard-content" class="dashboard" style="display: none;">
+        
+        <!-- LEFT PANEL -->
+        <div class="card panel-left">
+            <div class="card-badge">Constituency</div>
+            <h2 id="constituency-name" class="name">Loading...</h2>
+            <p id="constituency-district" class="district">Loading...</p>
+            <a href="/map.html" class="view-map-link">View on Map →</a>
+        </div>
+
+        <!-- CENTER PANEL -->
+        <div class="card panel-center">
+            <div class="card-badge">MLA — Assembly Constituency</div>
+            <h2 id="mla-name" class="name">Loading...</h2>
+            <p id="mla-party" class="party">Loading...</p>
+            <p id="mla-education" class="education">Loading...</p>
+
+            <h3 class="section-title">Key Achievements</h3>
+            <ul id="mla-achievements" class="achievements-list">
+                <!-- populated by JS -->
+            </ul>
+
+            <div class="sentiment-container">
+                <div id="sentiment-badge">Neutral</div>
+                <div class="sentiment-label">Public Sentiment</div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="card panel-right">
+            <div class="card-badge">MP — Lok Sabha</div>
+            <h2 id="mp-name" class="name">Loading...</h2>
+            <p id="mp-party" class="party">Loading...</p>
+        </div>
+
+    </div>
+
+    <script src="/js/geo.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/results.js"></script>
+</body>
+</html>
