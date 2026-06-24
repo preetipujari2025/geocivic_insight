@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoCivic Insight - Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        :root {
+            --bg-color: #0f1117;
+            --text-color: #ffffff;
+            --accent-color: #22c55e;
+            --accent-hover: #1ea34d;
+            --surface-color: #1f2937;
+            --border-color: #374151;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .top-bar {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+        }
+
+        .back-button {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-bar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .map-container {
+            position: relative;
+            height: 80vh;
+            width: 100%;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            background-color: #2a2a2a; /* Dark map fallback */
+        }
+
+        #loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 17, 23, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #constituency-preview {
+            /* display: none; by default via inline style */
+            padding: 1.5rem;
+            background-color: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .preview-subtitle {
+            color: var(--text-muted);
+            margin: 0 0 1rem 0;
+        }
+
+        .view-profiles-btn {
+            background-color: var(--accent-color);
+            color: #fff;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            display: inline-block;
+        }
+
+        .view-profiles-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Leaflet Dark mode adjustments */
+        .leaflet-layer,
+        .leaflet-control-zoom-in,
+        .leaflet-control-zoom-out,
+        .leaflet-control-attribution {
+            filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="/index.html" class="back-button">←</a>
+        <h1 class="top-bar-title">Your Constituency</h1>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+        <div id="loading-overlay">
+            <div class="spinner"></div>
+            <div>Locating constituency...</div>
+        </div>
+    </div>
+
+    <div id="constituency-preview" style="display: none;">
+        <h2 class="preview-title" id="preview-name">Constituency Name</h2>
+        <p class="preview-subtitle" id="preview-district">District Name</p>
+        <a href="/results.html" class="view-profiles-btn">View Leader Profiles →</a>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="/js/geo.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/map.js"></script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoCivic Insight - Know Who Represents You</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        :root {
+            --bg-color: #0f1117;
+            --text-color: #ffffff;
+            --accent-color: #22c55e;
+            --accent-hover: #1ea34d;
+            --text-muted: #9ca3af;
+            --input-bg: #1f2937;
+            --input-border: #374151;
+            --error-color: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .tagline {
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .headline {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 0 0 1.5rem 0;
+            line-height: 1.2;
+        }
+
+        .subtext {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .cta-button {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .cta-button:hover:not(:disabled) {
+            background-color: var(--accent-hover);
+        }
+        
+        .cta-button:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .cta-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 2.5rem 0;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--input-border);
+        }
+
+        .divider:not(:empty)::before {
+            margin-right: 1rem;
+        }
+
+        .divider:not(:empty)::after {
+            margin-left: 1rem;
+        }
+
+        .divider-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .search-container {
+            display: flex;
+            width: 100%;
+            max-width: 500px;
+            gap: 0.5rem;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .search-button {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .search-button:hover {
+            background-color: #374151;
+        }
+
+        .small-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 1.5rem;
+        }
+
+        #location-error {
+            display: none;
+            color: var(--error-color);
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            background-color: rgba(239, 68, 68, 0.1);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--input-border);
+        }
+
+        @media (max-width: 640px) {
+            .headline {
+                font-size: 2.5rem;
+            }
+            .search-container {
+                flex-direction: column;
+            }
+            .search-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <div class="tagline">Karnataka Civic Intelligence</div>
+        <h1 class="headline">Know Who Represents You</h1>
+        <p class="subtext">Enter your location to instantly find your MLA and MP — and what they've actually done.</p>
+
+        <button id="locate-btn" class="cta-button">
+            📍 Use My Location
+        </button>
+        <p id="location-error" style="display:none; color: #ef4444;"></p>
+
+        <div class="divider">
+            <span class="divider-text">or search manually</span>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Enter constituency name...">
+            <button id="search-btn" class="search-button">Search</button>
+        </div>
+        
+        <p class="small-text">Covering all 224 Karnataka Assembly constituencies</p>
+    </main>
+
+    <footer>
+        GeoCivic Insight · Built for Karnataka Citizens · No external APIs · Privacy first
+    </footer>
+
+    <script src="/js/geo.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const locateBtn = document.getElementById('locate-btn');
+            const searchInput = document.getElementById('search-input');
+            const searchBtn = document.getElementById('search-btn');
+            const errorElement = document.getElementById('location-error');
+
+            // Handle location button click
+            locateBtn.addEventListener('click', () => {
+                locateBtn.textContent = 'Getting location...';
+                locateBtn.disabled = true;
+                errorElement.style.display = 'none';
+
+                if (window.GeoLocation && window.GeoLocation.requestLocation) {
+                    window.GeoLocation.requestLocation(
+                        (lat, lng, accuracy) => {
+                            window.GeoLocation.storeCoordinates(lat, lng);
+                            window.location.href = '/map.html';
+                        },
+                        (errorMsg) => {
+                            errorElement.textContent = errorMsg;
+                            errorElement.style.display = 'block';
+                            locateBtn.innerHTML = '📍 Use My Location';
+                            locateBtn.disabled = false;
+                        },
+                        () => {
+                            // loading state already set
+                        }
+                    );
+                } else {
+                    errorElement.textContent = "Geolocation module not loaded.";
+                    errorElement.style.display = 'block';
+                    locateBtn.innerHTML = '📍 Use My Location';
+                    locateBtn.disabled = false;
+                }
+            });
+
+            // Handle search function
+            const handleSearch = () => {
+                const query = searchInput.value.trim();
+                if (query.length < 3) {
+                    errorElement.textContent = "Please enter at least 3 characters";
+                    errorElement.style.display = 'block';
+                } else {
+                    errorElement.style.display = 'none';
+                    if (window.GeoLocation && window.GeoLocation.storeSearchQuery) {
+                        window.GeoLocation.storeSearchQuery(query);
+                        window.location.href = '/results.html';
+                    }
+                }
+            };
+
+            searchBtn.addEventListener('click', handleSearch);
+
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleSearch();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
